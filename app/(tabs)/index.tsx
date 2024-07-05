@@ -1,70 +1,92 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import React, { useState } from "react";
+import Home from "../../screens/home";
+import AddNote from "../../screens/addNote";
+import EditNote from "../../screens/editNote";
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-
-export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
+const CurrentPageWidget = ({
+  currentPage,
+  noteList,
+  setCurrentPage,
+  addNote,
+  deleteNote,
+  editNote,
+  noteToEdit,
+  setNoteToEdit,
+}) => {
+  switch (currentPage) {
+    case "home":
+      return (
+        <Home
+          noteList={noteList}
+          setCurrentPage={setCurrentPage}
+          deleteNote={deleteNote}
+          setNoteToEdit={setNoteToEdit}
         />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({ ios: 'cmd + d', android: 'cmd + m' })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
-  );
-}
+      );
+    case "add":
+      return <AddNote setCurrentPage={setCurrentPage} addNote={addNote} />;
+    case "edit":
+      return (
+        <EditNote
+          setCurrentPage={setCurrentPage}
+          noteToEdit={noteToEdit}
+          editNote={editNote}
+        />
+      );
+    default:
+      return <Home />;
+  }
+};
 
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
-});
+const App = () => {
+  const [currentPage, setCurrentPage] = useState("home");
+  const [noteList, setNoteList] = useState([
+    {
+      id: 1,
+      title: "Note pertama",
+      desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry",
+    },
+  ]);
+  const [noteToEdit, setNoteToEdit] = useState(null); // State untuk catatan yang akan diedit
+
+  const addNote = (title, desc) => {
+    const id = noteList.length > 0 ? noteList[noteList.length - 1].id + 1 : 1;
+    setNoteList([
+      ...noteList,
+      {
+        id,
+        title: title,
+        desc: desc,
+      },
+    ]);
+    setCurrentPage("home"); // Kembali ke halaman utama setelah menambahkan catatan
+  };
+
+  const deleteNote = (id) => {
+    setNoteList(noteList.filter((note) => note.id !== id));
+  };
+
+  const editNote = (id, newTitle, newDesc) => {
+    setNoteList(
+      noteList.map((note) =>
+        note.id === id ? { ...note, title: newTitle, desc: newDesc } : note
+      )
+    );
+    setCurrentPage("home"); // Kembali ke halaman utama setelah mengedit catatan
+  };
+
+  return (
+    <CurrentPageWidget
+      currentPage={currentPage}
+      noteList={noteList}
+      setCurrentPage={setCurrentPage}
+      addNote={addNote}
+      deleteNote={deleteNote}
+      editNote={editNote}
+      noteToEdit={noteToEdit}
+      setNoteToEdit={setNoteToEdit}
+    />
+  );
+};
+
+export default App;

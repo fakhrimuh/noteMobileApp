@@ -1,0 +1,75 @@
+import React from "react";
+import { View, Text, FlatList, Button, StyleSheet } from "react-native";
+import CustomButton from "@/components/customButton";
+
+const Home = ({ noteList, setCurrentPage, deleteNote, setNoteToEdit }) => {
+  const handleEdit = (note) => {
+    setNoteToEdit(note);
+    setCurrentPage("edit");
+  };
+
+  return (
+    <View style={styles.container}>
+      <FlatList
+        data={noteList}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => (
+          <View style={styles.card}>
+            <Text style={styles.cardTitle}>{item.title}</Text>
+            <Text>{item.desc}</Text>
+            <View style={styles.buttons}>
+              <CustomButton
+                backgroundColor="#FFC300"
+                color="#151D3B"
+                text="Ubah"
+                fontSize={12}
+                width={100}
+                onPress={() => handleEdit(item)}
+              />
+              <CustomButton
+                backgroundColor="#D82148"
+                color="#fff"
+                text="Hapus"
+                fontSize={12}
+                width={100}
+                onPress={() => deleteNote(item.id)}
+              />
+            </View>
+          </View>
+        )}
+      />
+      <Button title="Add Note" onPress={() => setCurrentPage("add")} />
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    paddingHorizontal: 20,
+    paddingVertical: 40,
+  },
+  card: {
+    padding: 10,
+    marginVertical: 15,
+    borderColor: "#DDD",
+    borderWidth: 2,
+    borderRadius: 5,
+  },
+  cardTitle: {
+    fontWeight: "600",
+    color: "#203239",
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  buttons: {
+    marginTop: 10,
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+  },
+});
+
+export default Home;

@@ -57,8 +57,7 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
-    paddingHorizontal: 20,
-    paddingVertical: 40,
+    padding: 20,
   },
   pageTitle: {
     marginTop: 20,
